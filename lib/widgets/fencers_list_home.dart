@@ -12,7 +12,7 @@ class _FencersListHomeState extends State<FencersListHome> {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.75,
-      height: 200,
+      height: 250,
       child: ListView.builder(
         itemCount: fencers.length,
         itemBuilder: (ctx, index) {
@@ -26,11 +26,18 @@ class _FencersListHomeState extends State<FencersListHome> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Text(
-                fencers[index].name,
-                style: TextStyle(
-                  fontSize: 23,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                // flex: 2,
+                child: Text(
+                  fencers[index].name,
+                  style: TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  // overflow: TextOverflow.,
+                  // softWrap: false,
                 ),
               ),
               IconButton(
