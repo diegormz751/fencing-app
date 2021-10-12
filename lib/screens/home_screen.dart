@@ -1,85 +1,111 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../widgets/fencers_list_home.dart';
-import '../widgets/input_home.dart';
-import '../fencers_list_data.dart';
-import '../models/fencer_model.dart';
 import '../screens/combats_screen.dart';
+import '../widgets/fencers_list.dart';
+import '../providers/fencers_provider.dart';
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
+class HomeScreen extends StatelessWidget {
+  HomeScreen({Key? key}) : super(key: key);
 
-class _HomeScreenState extends State<HomeScreen> {
-  void _addNewFencer(String fencer) {
-    if (fencer == '') {
-      return;
-    }
-    setState(() {
-      fencers.add(FencerModel(
-        id: (fencers.length + 1).toString(),
-        name: fencer,
-      ));
-    });
-  }
+  final fencerController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    //
+    final fencersData = Provider.of<FencersProvider>(context, listen: false);
+
     return Scaffold(
       body: SafeArea(
         child: Container(
           width: double.infinity,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 50),
+              Container(
+                margin: EdgeInsets.only(top: 15),
                 child: Text(
                   'Fencing App',
                   style: TextStyle(
-                    fontSize: 30,
+                    fontSize: 35,
                     fontWeight: FontWeight.bold,
                     fontStyle: FontStyle.italic,
                   ),
                 ),
               ),
-              FencersListHome(),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 15,
-                    horizontal: 40,
+              FencersList(),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  border: Border.all(
+                    width: 2,
                   ),
                 ),
-                onPressed: () {
-                  if (fencers.length < 2) {
-                    showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: Text('You need at least two fencers to start'),
-                        actions: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text('Confirm'),
-                          ),
-                        ],
-                      ),
-                    );
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(50),
+                  splashColor: Colors.black12,
+                  onTap: () {
+                    if (fencersData.fencers.length < 2) {
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          content: Text(
+                              'Necesitas al menos 2 tiradores para empezar!'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
+                      return;
+                    }
+                    Navigator.of(context).pushNamed(CombatsScreen.route);
+                    fencersData.generateCombats();
+                  },
+                  child: const Icon(
+                    Icons.play_arrow_rounded,
+                    size: 90,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              TextField(
+                textCapitalization: TextCapitalization.sentences,
+                controller: fencerController,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                onSubmitted: (_) {
+                  if (fencerController.text.trim().isEmpty) {
                     return;
                   }
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CombatsScreen(),
-                    ),
-                  );
+                  fencersData.addFencer(fencerController.text.trim());
+                  fencerController.clear();
                 },
-                child: Text('Empezar'),
-              ),
-              InputHome(_addNewFencer),
+                decoration: InputDecoration(
+                  labelText: 'Añadir tirador',
+                  fillColor: Colors.white,
+                  filled: true,
+                  labelStyle: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      if (fencerController.text.trim().isEmpty) {
+                        return;
+                      }
+                      fencersData.addFencer(fencerController.text.trim());
+                      fencerController.clear();
+                    },
+                    icon: const Icon(Icons.add),
+                  ),
+                ),
+              )
             ],
           ),
         ),

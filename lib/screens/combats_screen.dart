@@ -1,29 +1,35 @@
+import 'package:fencing_poule/widgets/fencers_combats_list.dart';
 import 'package:flutter/material.dart';
 
-import '../fencers_list_data.dart';
-import '../widgets/fencer_card.dart';
-
 class CombatsScreen extends StatelessWidget {
+  const CombatsScreen({Key? key}) : super(key: key);
+
+  static const route = '/combats-screen';
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
         bool willLeave = false;
+        // show the confirm dialog
         await showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            title: Text('Are you sure want to leave?'),
+            title: Text('¿Seguro que quieres salir?'),
             actions: [
               ElevatedButton(
+                child: Text('Sí'),
                 onPressed: () {
-                  willLeave = true;
                   Navigator.of(context).pop();
+                  willLeave = true;
                 },
-                child: Text('Yes'),
               ),
               TextButton(
-                onPressed: () => Navigator.of(context).pop(),
                 child: Text('No'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  willLeave = false;
+                },
               ),
             ],
           ),
@@ -36,32 +42,28 @@ class CombatsScreen extends StatelessWidget {
             children: [
               Container(
                 margin: EdgeInsets.only(
-                  top: 20,
-                  left: 20,
-                  right: 20,
+                  bottom: 0,
+                  top: 10,
+                  left: 10,
+                  right: 10,
                 ),
-                padding: EdgeInsets.all(15),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          '# ',
-                          style: Theme.of(context).textTheme.headline1,
-                        ),
-                        Text(
-                          'Name',
-                          style: Theme.of(context).textTheme.headline1,
-                        ),
-                      ],
-                    ),
                     Container(
-                      width: MediaQuery.of(context).size.width * 0.50,
+                      width: 140,
+                      child: Text(
+                        '#  Nombre',
+                        style: Theme.of(context).textTheme.headline1,
+                      ),
+                    ),
+                    SizedBox(width: 15),
+                    Expanded(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -78,11 +80,11 @@ class CombatsScreen extends StatelessWidget {
                             style: Theme.of(context).textTheme.headline1,
                           ),
                           Text(
-                            'IND',
+                            'Ind',
                             style: Theme.of(context).textTheme.headline1,
                           ),
                           Text(
-                            'PI',
+                            'PL',
                             style: Theme.of(context).textTheme.headline1,
                           ),
                         ],
@@ -91,14 +93,7 @@ class CombatsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: fencers.length,
-                  itemBuilder: (ctx, index) {
-                    return FencerCard(index);
-                  },
-                ),
-              ),
+              FencersCombatsList(),
             ],
           ),
         ),
